@@ -1,0 +1,14 @@
+{
+  "name": "viktor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mees van Dijk <mees@itisme.es> (http://mees.io)",
+  "license": "MIT",
+  "dependencies": {
+    "serialport": "^6.0.4"
+  }
+}
