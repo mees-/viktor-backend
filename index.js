@@ -7,8 +7,8 @@ port.open(() => {
   console.log('opened')
 })
 
-let interval = setInterval(() => {
-  const data = port.read(40)
+setInterval(() => {
+  const data = port.read(8)
   if (data != null) {
     console.log('data:', data.toString('ascii'))
   }
