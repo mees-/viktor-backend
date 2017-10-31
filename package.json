@@ -11,7 +11,13 @@
       "name": "Mees van Dijk",
       "email": "mees@itisme.es",
       "url": "https://mees.io"
+    },
+    {
+      "name": "Tijmen Krijnen",
+      "email":  "tijmen.krijnen@gmail.com",
+      "url": ""
     }
+
   ],
   "license": "MIT",
   "dependencies": {
