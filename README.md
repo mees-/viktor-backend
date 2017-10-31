@@ -1,5 +1,4 @@
-#project viktor
-
+#project-viktor
 
 contributors
 - mees-
