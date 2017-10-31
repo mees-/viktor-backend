@@ -27,5 +27,8 @@
   "dependencies": {
     "basy": "^0.2.2",
     "serialport": "^6.0.4"
+  },
+  "devDependencies": {
+    "prettier": "^1.7.4"
   }
 }
