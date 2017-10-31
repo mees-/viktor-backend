@@ -6,7 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Mees van Dijk <mees@itisme.es> (http://mees.io)",
+  "contributors": [
+    {
+      "name": "Mees van Dijk",
+      "email": "mees@itisme.es",
+      "url": "https://mees.io"
+    }
+  ],
   "license": "MIT",
   "dependencies": {
     "serialport": "^6.0.4"
