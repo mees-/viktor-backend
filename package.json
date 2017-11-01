@@ -28,6 +28,7 @@
     "express": "^4.16.2",
     "fs-extra": "^4.0.2",
     "hasha": "^3.0.0",
+    "minimist": "^1.2.0",
     "morgan": "^1.9.0",
     "nedb-promise": "^2.0.1",
     "serialport": "^6.0.4",
