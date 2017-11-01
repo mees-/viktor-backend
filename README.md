@@ -3,33 +3,34 @@
 
 ## Testing instructions
 ### Installing Node.js
-this project runs on Node.js so you need to install node.  
-to install node, go to [the downloads page](https://nodejs.org/en/download/) and download the latest node version in the 8.x.x range
+This project runs on Node.js so you need to install node.  
+To install node, go to [the downloads page](https://nodejs.org/en/download/) and download the latest node version in the 8.x.x range.
 
 ### Setup
-after installing Node.js, go to the folder where you extracted the contents of backend.zip  
+After installing Node.js, go to the folder where you extracted the contents of backend.zip.
 In this folder, run `npm install` this will download all of the dependencies for the project.
 
 ### Arduino
-After the dependencies have been installed, you are almost ready to run the code, make sure you connect the arduino and upload the right script to it using the arduino IDE. the script can be found in arduino.zip. Also find out what port the arduino is connected to. On my (macOS) computer, this was the path `/dev/tty.usbmodem14621`.
+After the dependencies have been installed, you are almost ready to run the code, make sure you connect the arduino and upload the right script to it using the arduino IDE. The script can be found in arduino.zip. Also find out what port the arduino is connected to. On my (macOS) computer, this was the path `/dev/tty.usbmodem14621`.
 
 ### Running
-After getting the arduino setup, you are ready to run the server. go to the backend folder and run `node src/index.js --port $PORT -d $PATH_TO_DATABASE -s $PATH_TO_ARDUINO_PORT -p $PATH_TO_PASSWORD_FILE`  
-Don't forget to replace all variables starting with `$` with actual values. everything except for `$PATH_TO_ARDUINO_PORT` can be ommited to use defaults.
+After getting the arduino setup, you are ready to run the server. Go to the backend folder and run `node src/index.js --port $PORT -d $PATH_TO_DATABASE -s $PATH_TO_ARDUINO_PORT -p $PATH_TO_PASSWORD_FILE`  
+Don't forget to replace all variables starting with `$` with actual values. Everything except for `$PATH_TO_ARDUINO_PORT` can be ommited to use defaults.
 
 ### Testing
 When the server is up and running, go ahead and place a tag on the scanner, you will hear three short beeps, these indicate that the pass was denied, this is because it has not yet been added to a user in the database.  
 
 All actions are done through the API, some minimal documentation below:
 
-endpoints:
+Endpoints:
 - `/entries`
 - `/user`
 - `/passid`
 - `/adminpassword`
 
-all requests should be accompanied by a header called `x-auth`, the value for this header should be the admin password. By default this password is 'this is a very good password' (no quotes).  
-example for curl:  
+All requests should be accompanied by a header called `x-auth`, the value for this header should be the admin password. By default this password is 'this is a very good password' (no quotes).  
+
+###### Curl example:  
 `curl -H 'x-auth: this is a very good password' ....`  
 
 #### `/entries` - `GET`
@@ -65,7 +66,7 @@ This endpoint requires one query parameter: `userID`, this is the id of the user
 `curl -X DELETE -H 'x-auth: this is a very good password' localhost:8080/user?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a`
 
 #### `/passid` - `PUT`
-This endpoint adds a passid to a user, the way it works is you make the request and then you scan a pass on the arduino.  
+This endpoint adds a passID to a user, the way it works is you make the request and then you scan a pass on the Arduino.  
 The endpoint has one query parameter: `userID`, the id of the user the pass should be added to.
 
 ###### Curl example:  
@@ -82,7 +83,7 @@ The endpoint has two query parameters:
 
 #### `/adminpassword` - `PUT`
 This endpoint changed the admin password.  
-It has one query parameter: `password`, the new password
+It has one query parameter: `password`, the new password.
 
 ###### Curl example:  
 `curl -X PUT -H 'x-auth: this is a very good password' localhost:8080/adminpassword?password=a+better+password`
