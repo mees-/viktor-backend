@@ -21,4 +21,8 @@ module.exports = class USBConnection extends EventEmitter {
       })
     })
   }
+
+  write(...args) {
+    this.port.write(...args)
+  }
 }

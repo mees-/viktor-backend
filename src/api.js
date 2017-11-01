@@ -34,7 +34,6 @@ module.exports = function makeServer(db, passwordPath, captureID) {
       const saltedPassword = `${password}${app.locals.salt}`
       const hash = hasha(saltedPassword)
       if (hash === app.locals.hash) {
-        console.log('passing request on')
         next()
       } else {
         res.status(401).end('Bad credentials')
@@ -84,24 +83,27 @@ module.exports = function makeServer(db, passwordPath, captureID) {
 
   app.put('/passid', async (req, res) => {
     if ((await db.find({ passIDs: { $elemMatch: req.query.passID } })).length === 0) {
-      const user = await db.find({
+      const [user] = await db.find({
         userID: req.query.userID,
       })
+      if (user) {
+        try {
+          const passID = await captureID()
+          const newUser = {
+            ...user,
+            passIDs: [...user.passIDs, passID],
+          }
 
-      try {
-        const passID = await passID
-        const newUser = {
-          ...user,
-          passIDs: [...user.passIDs, passID],
+          await db.update({ userID: req.query.userID }, newUser)
+
+          res.status(200).end('Added pass')
+        } catch (e) {
+          if (e.code === 6969) {
+            res.status(400).end('Please scan the pass within 10 seconds')
+          }
         }
-
-        await db.update({ userID: req.query.userID }, newUser)
-
-        res.status(200).end('Added pass')
-      } catch (e) {
-        if (e.code === 6969) {
-          res.status(400).end('Please scan the pass within 10 seconds')
-        }
+      } else {
+        res.status(404).end('User not found')
       }
     } else {
       res.status(400).end('That passID is aleady associated with a user')

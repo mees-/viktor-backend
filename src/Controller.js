@@ -5,7 +5,7 @@ const https = require('http')
 
 const timeInDay = () => {
   const dayStart = new Date()
-  datStart.setHours(0, 0, 0, 0)
+  dayStart.setHours(0, 0, 0, 0)
   return new Date() - dayStart
 }
 
@@ -28,27 +28,15 @@ module.exports = class Controller {
       autoload: true,
     })
 
-    this.captureID = false
+    this.capture = false
 
     this.connection = new USBConnection(options.scannerPath)
 
-    this.connection.on('id', this.handleID)
+    this.connection.on('id', this.handleID.bind(this))
 
-    this.webserver = api(this.db, options.passwordPath, this.captureID).listen(options.port, () => {
+    this.webserver = api(this.db, options.passwordPath, this.captureID.bind(this)).listen(options.port, () => {
       console.log(`started listening on port: ${options.port}`)
     })
-  }
-
-  async handleID(id) {
-    if (!this.captureID) {
-      if (await this.idHasAccess(id)) {
-        // send signal to open door and to beep
-        this.connection.write('1')
-      } else {
-        // send signal to do boop
-        this.connection.write('0')
-      }
-    }
   }
 
   async idHasAccess(id) {
@@ -66,6 +54,20 @@ module.exports = class Controller {
     if (time > person.endTime) {
       return false
     }
+
+    return true
+  }
+
+  async handleID(id) {
+    if (!this.capture) {
+      if (await this.idHasAccess(id)) {
+        // send signal to open door and to beep
+        this.connection.write('1')
+      } else {
+        // send signal to do boop
+        this.connection.write('0')
+      }
+    }
   }
 
   captureID() {
@@ -77,13 +79,15 @@ module.exports = class Controller {
         reject(err)
       }, 10000)
       this.connection.once('id', resolve)
+      this.capture = true
     }).then(
       id => {
-        this.captureID = false
+        this.capture = false
+        this.connection.write('1')
         return id
       },
       err => {
-        this.captureID = false
+        this.capture = false
         throw err
       },
     )
