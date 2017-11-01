@@ -2,6 +2,7 @@ const express = require('express')
 const fs = require('fs-extra')
 const hasha = require('hasha')
 const uuid = require('uuid')
+const morgan = require('morgan')
 
 module.exports = function makeServer(db, passwordPath, captureID) {
   const app = express()
@@ -25,6 +26,9 @@ module.exports = function makeServer(db, passwordPath, captureID) {
 
       console.log('setup a default password')
     })
+
+  // add a requets logger to the server
+  app.use(morgan('dev'))
   // this middleware will make sure all requests are authenticated
   app.use((req, res, next) => {
     const password = req.headers['x-auth']
@@ -89,14 +93,19 @@ module.exports = function makeServer(db, passwordPath, captureID) {
       if (user) {
         try {
           const passID = await captureID()
-          const newUser = {
-            ...user,
-            passIDs: [...user.passIDs, passID],
+          if ((await db.find({ passIDs: { $elemMatch: passID } })).length === 0) {
+            const newUser = {
+              ...user,
+              passIDs: [...user.passIDs, passID],
+            }
+
+            await db.update({ userID: req.query.userID }, newUser)
+
+            res.status(200).end('Added pass')
+          } else {
+            // TODO: status code
+            res.status(400).end('passID is already associated with a user')
           }
-
-          await db.update({ userID: req.query.userID }, newUser)
-
-          res.status(200).end('Added pass')
         } catch (e) {
           if (e.code === 6969) {
             res.status(400).end('Please scan the pass within 10 seconds')
