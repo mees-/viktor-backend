@@ -1,5 +1,4 @@
 const express = require('express')
-const Basy = require('basy')
 const fs = require('fs-extra')
 const hasha = require('hasha')
 const uuid = require('uuid')
@@ -12,38 +11,41 @@ module.exports = function makeServer(db, passwordPath, captureID) {
       const [hash, salt] = file.split('\n')
       app.locals.hash = hash
       app.locals.salt = salt
+      console.log('read a password with hash', hash)
     })
-    .catch(err => {
+    .catch(async err => {
       // use the default password
       const password = 'this is a very good password'
       const salt = uuid()
       const saltedPassword = `${password}${salt}`
       const hash = hasha(saltedPassword)
-      return fs.writeFile(passwordPath, `${hash}\n${salt}`)
-    })
-    .then(() => {
+      await fs.writeFile(passwordPath, `${hash}\n${salt}`)
       app.locals.hash = hash
       app.locals.salt = salt
-    })
 
+      console.log('setup a default password')
+    })
   // this middleware will make sure all requests are authenticated
   app.use((req, res, next) => {
-    const password = req.headers['X-Auth']
+    const password = req.headers['x-auth']
 
     if (password) {
       // check if valid
-      const saltedPassword = `${password}${db.locals.salt}`
+      const saltedPassword = `${password}${app.locals.salt}`
       const hash = hasha(saltedPassword)
-      if (hash === db.locals.hash) {
+      if (hash === app.locals.hash) {
+        console.log('passing request on')
         next()
       } else {
         res.status(401).end('Bad credentials')
       }
+    } else {
+      res.status(401).end('Bad credentials')
     }
   })
 
   app.get('/entries', async (req, res) => {
-    const allEntries = await db.find(() => true)
+    const allEntries = await db.find({})
     res.json(allEntries)
   })
 
@@ -81,7 +83,7 @@ module.exports = function makeServer(db, passwordPath, captureID) {
   })
 
   app.put('/passid', async (req, res) => {
-    if ((await db.find(doc => doc.passIDs.includes(req.query.passID))).length === 0) {
+    if ((await db.find({ passIDs: { $elemMatch: req.query.passID } })).length === 0) {
       const user = await db.find({
         userID: req.query.userID,
       })
@@ -120,7 +122,7 @@ module.exports = function makeServer(db, passwordPath, captureID) {
   })
 
   app.delete('/user', async (req, res) => {
-    await db.delete({ userID: req.query.userID })
+    await db.remove({ userID: req.query.userID })
     res.status(200).end('Deleted user')
   })
 

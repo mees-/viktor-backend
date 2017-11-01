@@ -1,4 +1,4 @@
-const Basy = require('basy')
+const Datastore = require('nedb-promise')
 const USBConnection = require('./USBConnection')
 const api = require('./api')
 const https = require('http')
@@ -18,12 +18,14 @@ const defaultOptions = {
 
 module.exports = class Controller {
   constructor(options) {
-    options = object.assign({}, defaultOptions, options)
+    options = {
+      ...defaultOptions,
+      ...options,
+    }
 
-    this.db = new Basy({
-      path: options.dbPath,
-      writeInterval: 1,
-      indexes: ['_id', 'userID'],
+    this.db = new Datastore({
+      filename: options.dbPath,
+      autoload: true,
     })
 
     this.captureID = false
@@ -32,23 +34,25 @@ module.exports = class Controller {
 
     this.connection.on('id', this.handleID)
 
-    this.webserver = api(this.db, options.passwordPath, this.captureID).listen(options.port)
+    this.webserver = api(this.db, options.passwordPath, this.captureID).listen(options.port, () => {
+      console.log(`started listening on port: ${options.port}`)
+    })
   }
 
-  handleID(id) {
+  async handleID(id) {
     if (!this.captureID) {
-      if (idHasAccess(id)) {
+      if (await this.idHasAccess(id)) {
         // send signal to open door and to beep
-        console.log('yes')
+        this.connection.write('1')
       } else {
         // send signal to do boop
-        console.log('no')
+        this.connection.write('0')
       }
     }
   }
 
-  idHasAccess(id) {
-    const [person] = this.db.find(doc => doc.passIDs.includes(id))
+  async idHasAccess(id) {
+    const person = await this.db.findOne({ passIDs: { $elemMatch: id } })
     if (!person) {
       return false
     }

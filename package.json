@@ -25,9 +25,10 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "basy": "^0.2.2",
+    "express": "^4.16.2",
     "fs-extra": "^4.0.2",
     "hasha": "^3.0.0",
+    "nedb-promise": "^2.0.1",
     "serialport": "^6.0.4",
     "uuid": "^3.1.0"
   },
