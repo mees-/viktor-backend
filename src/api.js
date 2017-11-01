@@ -62,6 +62,8 @@ module.exports = function makeServer(db, passwordPath, captureID) {
 
       app.locals.hash = hash
       app.locals.salt = salt
+
+      res.status(200).end('Changed the admin password')
     } else {
       res.status(400).end('Specify a password in the query params')
     }
