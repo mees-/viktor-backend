@@ -14,7 +14,8 @@ In this folder, run `npm install` this will download all of the dependencies for
 After the dependencies have been installed, you are almost ready to run the code, make sure you connect the arduino and upload the right script to it using the arduino IDE. The script can be found in arduino.zip. Also find out what port the arduino is connected to. On my (macOS) computer, this was the path `/dev/tty.usbmodem14621`.
 
 ### Running
-After getting the arduino setup, you are ready to run the server. Go to the backend folder and run `node src/index.js --port $PORT -d $PATH_TO_DATABASE -s $PATH_TO_ARDUINO_PORT -p $PATH_TO_PASSWORD_FILE`  
+After getting the arduino setup, you are ready to run the server. Go to the backend folder and run  
+`node src/index.js --port $PORT -d $PATH_TO_DATABASE -s $PATH_TO_ARDUINO_PORT -p $PATH_TO_PASSWORD_FILE`  
 Don't forget to replace all variables starting with `$` with actual values. Everything except for `$PATH_TO_ARDUINO_PORT` can be ommited to use defaults.
 
 ### Testing
@@ -60,8 +61,9 @@ This endpoint requires some query parameters:
 - `endTime`: the endTime for the user
 
 ###### Curl example:  
-```
-curl -X POST -H 'x-auth: this is a very good password' localhost:8080/user?userName=john&startTime=36000000&endTime=68400000
+```sh
+curl -X POST -H 'x-auth: this is a very good password' \
+'localhost:8080/user?userName=john&startTime=36000000&endTime=68400000'
 ```
 
 #### `/user` - `DELETE`
@@ -71,7 +73,7 @@ This endpoint requires one query parameter: `userID`, this is the id of the user
 ###### Curl example:  
 ```sh
 curl -X DELETE -H 'x-auth: this is a very good password' \
-localhost:8080/user?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a\
+'localhost:8080/user?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a'
 ```
 
 #### `/passid` - `PUT`
@@ -79,8 +81,9 @@ This endpoint adds a passID to a user, the way it works is you make the request 
 The endpoint has one query parameter: `userID`, the id of the user the pass should be added to.
 
 ###### Curl example:  
-```
-curl -X PUT -H 'x-auth: this is a very good password' localhost:8080/passid?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a
+```sh
+curl -X PUT -H 'x-auth: this is a very good password' \
+'localhost:8080/passid?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a'
 ```
 
 #### `/passid` - `DELETE`
@@ -92,7 +95,7 @@ The endpoint has two query parameters:
 ###### Curl example:  
 ```sh
 curl -X DELETE -H 'x-auth: this is a very good password' \
-localhost:8080/passid?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a&passID=123123123
+'localhost:8080/passid?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a&passID=123123123'
 ```
 
 #### `/adminpassword` - `PUT`
@@ -102,7 +105,7 @@ It has one query parameter: `password`, the new password.
 ###### Curl example:  
 ```sh
 curl -X PUT -H 'x-auth: this is a very good password' \
-localhost:8080/adminpassword?password=a+better+password
+'localhost:8080/adminpassword?password=a+better+password'
 ```
 
 ## License
