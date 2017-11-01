@@ -1,7 +1,7 @@
 const Basy = require('basy')
 const USBConnection = require('./USBConnection')
 const api = require('./api')
-const https = require('https')
+const https = require('http')
 
 const timeInDay = () => {
   const dayStart = new Date()
@@ -13,7 +13,7 @@ const defaultOptions = {
   dbPath: null,
   scannerPath: null,
   passwordPath: null,
-  port: 8080
+  port: 8080,
 }
 
 module.exports = class Controller {
@@ -23,7 +23,7 @@ module.exports = class Controller {
     this.db = new Basy({
       path: options.dbPath,
       writeInterval: 1,
-      indexes: ['_id', 'userID']
+      indexes: ['_id', 'userID'],
     })
 
     this.captureID = false
@@ -32,15 +32,7 @@ module.exports = class Controller {
 
     this.connection.on('id', this.handleID)
 
-    this.webserver = https
-      .createServer(
-        {
-          key: options.key,
-          cert: options.cert
-        },
-        api(this.db, options.passwordPath, this.captureID)
-      )
-      .listen(options.port)
+    this.webserver = api(this.db, options.passwordPath, this.captureID).listen(options.port)
   }
 
   handleID(id) {
@@ -89,7 +81,7 @@ module.exports = class Controller {
       err => {
         this.captureID = false
         throw err
-      }
+      },
     )
   }
 }

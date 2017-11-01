@@ -26,7 +26,7 @@ module.exports = function makeServer(db, passwordPath, captureID) {
       app.locals.salt = salt
     })
 
-  // this middleware will make sure all requests are  authenticated
+  // this middleware will make sure all requests are authenticated
   app.use((req, res, next) => {
     const password = req.headers['X-Auth']
 

@@ -2,7 +2,7 @@ const SerialPort = require('serialport')
 const EventEmitter = require('events')
 
 module.exports = class USBConnection extends EventEmitter {
-  constructor(path, options = { baudRate: 9600 }, pollRate = 50) {
+  constructor(path, options = { baudRate: 9600 }) {
     super()
 
     this.port = new SerialPort(path, options)
