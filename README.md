@@ -22,6 +22,8 @@ When the server is up and running, go ahead and place a tag on the scanner, you 
 
 All actions are done through the API, some minimal documentation below:
 
+## API documentation
+
 Endpoints:
 - `/entries`
 - `/user`
