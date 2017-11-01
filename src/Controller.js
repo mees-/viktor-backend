@@ -29,8 +29,14 @@ module.exports = class Controller {
     })
 
     this.capture = false
-
-    this.connection = new USBConnection(options.scannerPath)
+    try {
+      this.connection = new USBConnection(options.scannerPath)
+    } catch (e) {
+      if (e.code === 'ENOENT' || e.code === 'EACCES') {
+        console.error('Cannot access the usb device')
+        process.exit(1)
+      }
+    }
 
     this.connection.on('id', this.handleID.bind(this))
 
