@@ -48,7 +48,9 @@ This endpoint returns an array with all the users, a user object looks like the 
 ```
 
 ###### Curl example:  
-`curl -H 'x-auth: this is a very good password' localhost:8080/entries`
+```
+curl -H 'x-auth: this is a very good password' localhost:8080/entries
+```
 
 #### `/user` - `POST`
 Posting to this endpoint will add a user to the database.  
@@ -58,21 +60,28 @@ This endpoint requires some query parameters:
 - `endTime`: the endTime for the user
 
 ###### Curl example:  
-`curl -X POST -H 'x-auth: this is a very good password' localhost:8080/user?userName=john&startTime=36000000&endTime=68400000`
+```
+curl -X POST -H 'x-auth: this is a very good password' localhost:8080/user?userName=john&startTime=36000000&endTime=68400000
+```
 
 #### `/user` - `DELETE`
 A delete request will remove a user and all the information associated with that user from the database.  
 This endpoint requires one query parameter: `userID`, this is the id of the user in the database.
 
 ###### Curl example:  
-`curl -X DELETE -H 'x-auth: this is a very good password' localhost:8080/user?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a`
+```sh
+curl -X DELETE -H 'x-auth: this is a very good password' \
+localhost:8080/user?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a\
+```
 
 #### `/passid` - `PUT`
 This endpoint adds a passID to a user, the way it works is you make the request and then you scan a pass on the Arduino.  
 The endpoint has one query parameter: `userID`, the id of the user the pass should be added to.
 
 ###### Curl example:  
-`curl -X PUT -H 'x-auth: this is a very good password' localhost:8080/passid?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a`
+```
+curl -X PUT -H 'x-auth: this is a very good password' localhost:8080/passid?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a
+```
 
 #### `/passid` - `DELETE`
 This endpoint removes a passid from a user.  
@@ -81,14 +90,20 @@ The endpoint has two query parameters:
 - `passID`: id of pass
 
 ###### Curl example:  
-`curl -X DELETE -H 'x-auth: this is a very good password' localhost:8080/passid?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a&passID=123123123`
+```sh
+curl -X DELETE -H 'x-auth: this is a very good password' \
+localhost:8080/passid?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a&passID=123123123
+```
 
 #### `/adminpassword` - `PUT`
 This endpoint changed the admin password.  
 It has one query parameter: `password`, the new password.
 
 ###### Curl example:  
-`curl -X PUT -H 'x-auth: this is a very good password' localhost:8080/adminpassword?password=a+better+password`
+```sh
+curl -X PUT -H 'x-auth: this is a very good password' \
+localhost:8080/adminpassword?password=a+better+password
+```
 
 ## License
 This project was brought to you by the kind folks of the viktor working group.
