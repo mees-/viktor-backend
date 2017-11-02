@@ -28,7 +28,7 @@ All actions are done through the API, some minimal documentation below:
 Endpoints:
 - `/entries`
 - `/user`
-- `/passid`
+- `/pass`
 - `/adminpassword`
 
 All requests should be accompanied by a header called `x-auth`, the value for this header should be the admin password. By default this password is 'this is a very good password' (no quotes).  
@@ -40,8 +40,7 @@ All requests should be accompanied by a header called `x-auth`, the value for th
 This endpoint returns an array with all the users, a user object looks like the following:
 ```js
 {
-  name: 'John',
-  userID: '6c84fb90-12c4-11e1-840d-7b25c5ee775a', // randomly generated id
+  name: 'Johnny Appleseed',   // must be unique
   passIDs: [123123123, 123113312],    // list of ids of passes that belong to this user
   startTime: 36000000, // the time in ms since the start of the day after which the user can open the door
   endTime: 68400000    // the time in ms since the start of the day after which the user can no longer open the door
@@ -56,46 +55,46 @@ curl -H 'x-auth: this is a very good password' localhost:8080/entries
 #### `/user` - `POST`
 Posting to this endpoint will add a user to the database.  
 This endpoint requires some query parameters:
-- `userName`: the name of the user
+- `username`: a unique username for a user
 - `startTime`: the startTime for the user
 - `endTime`: the endTime for the user
 
 ###### Curl example:  
 ```sh
 curl -X POST -H 'x-auth: this is a very good password' \
-'localhost:8080/user?userName=john&startTime=36000000&endTime=68400000'
+'localhost:8080/user?username=Johnny+Appleseed&startTime=36000000&endTime=68400000'
 ```
 
 #### `/user` - `DELETE`
 A delete request will remove a user and all the information associated with that user from the database.  
-This endpoint requires one query parameter: `userID`, this is the id of the user in the database.
+This endpoint requires one query parameter: `username`, this is the username of the user in the database.
 
 ###### Curl example:  
 ```sh
 curl -X DELETE -H 'x-auth: this is a very good password' \
-'localhost:8080/user?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a'
+'localhost:8080/user?username=Johnny+Appleseed'
 ```
 
-#### `/passid` - `PUT`
-This endpoint adds a passID to a user, the way it works is you make the request and then you scan a pass on the Arduino.  
-The endpoint has one query parameter: `userID`, the id of the user the pass should be added to.
+#### `/pass` - `PUT`
+This endpoint adds a pass to a user, the way it works is you make the request and then you scan a pass on the Arduino.  
+The endpoint has one query parameter: `username`, the username of the user the pass should be added to.
 
 ###### Curl example:  
 ```sh
 curl -X PUT -H 'x-auth: this is a very good password' \
-'localhost:8080/passid?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a'
+'localhost:8080/pass?username=Johnny+Appleseed'
 ```
 
-#### `/passid` - `DELETE`
-This endpoint removes a passid from a user.  
+#### `/pass` - `DELETE`
+This endpoint removes a pass from a user.  
 The endpoint has two query parameters:
-- `userID`: id of user
-- `passID`: id of pass
+- `username`: username of the user
+- `pass`: id of pass
 
 ###### Curl example:  
 ```sh
 curl -X DELETE -H 'x-auth: this is a very good password' \
-'localhost:8080/passid?userID=6c84fb90-12c4-11e1-840d-7b25c5ee775a&passID=123123123'
+'localhost:8080/pass?username=Johnny+Appleseed&pass=123123123'
 ```
 
 #### `/adminpassword` - `PUT`

@@ -104,8 +104,7 @@ module.exports = class Controller {
  * structure of a database object
  *
  * {
- *   name: string,
- *   userID: string,
+ *   username: string, (primary key)
  *   passIDs: string[],
  *   startTime: number,
  *   endTime: number

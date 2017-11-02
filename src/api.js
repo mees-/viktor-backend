@@ -40,6 +40,7 @@ module.exports = function makeServer(db, passwordPath, captureID) {
       if (hash === app.locals.hash) {
         next()
       } else {
+        console.log(password)
         res.status(401).end('Bad credentials')
       }
     } else {
@@ -69,17 +70,17 @@ module.exports = function makeServer(db, passwordPath, captureID) {
     }
   })
 
-  app.delete('/passid', async (req, res) => {
-    const user = await db.find({
-      userID: req.query.userID,
+  app.delete('/pass', async (req, res) => {
+    const user = await db.findOne({
+      username: req.query.username,
     })
 
-    if (user.passIDs.includes(req.query.passID)) {
+    if (user.passIDs.includes(req.query.pass)) {
       const newUser = {
         ...user,
-        passIDs: user.passIDs.filter(id => id !== req.query.passID),
+        passIDs: user.passIDs.filter(id => id !== req.query.pass),
       }
-      await db.update({ userID: req.query.userID }, newUser)
+      await db.update({ username: req.query.username }, newUser)
 
       res.status(200).end('Removed')
     } else {
@@ -87,55 +88,57 @@ module.exports = function makeServer(db, passwordPath, captureID) {
     }
   })
 
-  app.put('/passid', async (req, res) => {
-    if ((await db.find({ passIDs: { $elemMatch: req.query.passID } })).length === 0) {
-      const [user] = await db.find({
-        userID: req.query.userID,
-      })
-      if (user) {
-        try {
-          const passID = await captureID()
-          if ((await db.find({ passIDs: { $elemMatch: passID } })).length === 0) {
-            const newUser = {
-              ...user,
-              passIDs: [...user.passIDs, passID],
-            }
-
-            await db.update({ userID: req.query.userID }, newUser)
-
-            res.status(200).end('Added pass')
-          } else {
-            // TODO: status code
-            res.status(400).end('passID is already associated with a user')
+  app.put('/pass', async (req, res) => {
+    const user = await db.findOne({
+      username: req.query.username,
+    })
+    if (user) {
+      try {
+        const pass = await captureID()
+        console.log('pass:', pass)
+        if (!await db.findOne({ passIDs: { $elemMatch: pass } })) {
+          const newUser = {
+            ...user,
+            passIDs: [...user.passIDs, pass],
           }
-        } catch (e) {
-          if (e.code === 6969) {
-            res.status(400).end('Please scan the pass within 10 seconds')
-          }
+
+          await db.update({ username: req.query.username }, newUser)
+
+          res.status(200).end('Added pass')
+        } else {
+          // TODO: status code
+          res.status(400).end('pass is already associated with a user')
         }
-      } else {
-        res.status(404).end('User not found')
+      } catch (e) {
+        if (e.code === 6969) {
+          res.status(400).end('Please scan the pass within 10 seconds')
+        }
       }
     } else {
-      res.status(400).end('That passID is aleady associated with a user')
+      res.status(404).end('User not found')
     }
   })
 
   app.post('/user', async (req, res) => {
-    const user = {
-      userID: uuid(),
-      name: req.query.userName,
-      startTime: req.query.startTime,
-      endTime: req.query.endTime,
-      passIDs: [],
-    }
+    const existingUser = await db.findOne({ username: req.query.username })
+    if (!existingUser) {
+      const user = {
+        username: req.query.username,
+        startTime: req.query.startTime,
+        endTime: req.query.endTime,
+        passIDs: [],
+      }
 
-    await db.insert(user)
-    res.status(200).end('Added user')
+      await db.insert(user)
+      res.status(200).end('Added user')
+    } else {
+      console.log(existingUser)
+      res.status(400).end('Username already in use')
+    }
   })
 
   app.delete('/user', async (req, res) => {
-    await db.remove({ userID: req.query.userID })
+    await db.remove({ username: req.query.username })
     res.status(200).end('Deleted user')
   })
 
