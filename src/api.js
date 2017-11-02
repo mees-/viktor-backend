@@ -16,7 +16,7 @@ module.exports = function makeServer(db, passwordPath, captureID) {
     })
     .catch(async err => {
       // use the default password
-      const password = 'this is a very good password'
+      const password = 'hunter2'
       const salt = uuid()
       const saltedPassword = `${password}${salt}`
       const hash = hasha(saltedPassword)
@@ -40,7 +40,6 @@ module.exports = function makeServer(db, passwordPath, captureID) {
       if (hash === app.locals.hash) {
         next()
       } else {
-        console.log(password)
         res.status(401).end('Bad credentials')
       }
     } else {
@@ -56,15 +55,19 @@ module.exports = function makeServer(db, passwordPath, captureID) {
   app.put('/adminpassword', async (req, res) => {
     const newPassword = req.query.password
     if (newPassword) {
-      const salt = uuid()
-      const saltedPassword = `${newPassword}${salt}`
-      const hash = hasha(saltedPassword)
-      await fs.writeFile(passwordPath, `${hash}\n${salt}`)
+      if (newPassword.length > 32) {
+        res.status(400).end('password too long')
+      } else {
+        const salt = uuid()
+        const saltedPassword = `${newPassword}${salt}`
+        const hash = hasha(saltedPassword)
+        await fs.writeFile(passwordPath, `${hash}\n${salt}`)
 
-      app.locals.hash = hash
-      app.locals.salt = salt
+        app.locals.hash = hash
+        app.locals.salt = salt
 
-      res.status(200).end('Changed the admin password')
+        res.status(200).end('Changed the admin password')
+      }
     } else {
       res.status(400).end('Specify a password in the query params')
     }
@@ -74,18 +77,20 @@ module.exports = function makeServer(db, passwordPath, captureID) {
     const user = await db.findOne({
       username: req.query.username,
     })
-    console.log('Add user:', user)
+    if (user) {
+      if (user.passIDs.includes(req.query.pass)) {
+        const newUser = {
+          ...user,
+          passIDs: user.passIDs.filter(id => id !== req.query.pass),
+        }
+        await db.update({ username: req.query.username }, newUser)
 
-    if (user.passIDs.includes(req.query.pass)) {
-      const newUser = {
-        ...user,
-        passIDs: user.passIDs.filter(id => id !== req.query.pass),
+        res.status(200).end('Removed')
+      } else {
+        res.status(400).end('User does not have this pass')
       }
-      await db.update({ username: req.query.username }, newUser)
-
-      res.status(200).end('Removed')
     } else {
-      res.status(400).end('User does not have this pass')
+      res.status(404).end('User not found')
     }
   })
 
@@ -96,7 +101,6 @@ module.exports = function makeServer(db, passwordPath, captureID) {
     if (user) {
       try {
         const pass = await captureID()
-        console.log('pass:', pass)
         if (!await db.findOne({ passIDs: { $elemMatch: pass } })) {
           const newUser = {
             ...user,
@@ -107,7 +111,6 @@ module.exports = function makeServer(db, passwordPath, captureID) {
 
           res.status(200).end(`Added pass:${pass}`)
         } else {
-          // TODO: status code
           res.status(400).end('pass is already associated with a user')
         }
       } catch (e) {
@@ -133,7 +136,6 @@ module.exports = function makeServer(db, passwordPath, captureID) {
       await db.insert(user)
       res.status(200).end('Added user')
     } else {
-      console.log(existingUser)
       res.status(400).end('Username already in use')
     }
   })
