@@ -31,10 +31,10 @@ Endpoints:
 - `/pass`
 - `/adminpassword`
 
-All requests should be accompanied by a header called `x-auth`, the value for this header should be the admin password. By default this password is 'this is a very good password' (no quotes).  
+All requests should be accompanied by a header called `x-auth`, the value for this header should be the admin password. By default this password is 'hunter2' (no quotes).  
 
 ###### Curl example:  
-`curl -H 'x-auth: this is a very good password' ....`  
+`curl -H 'x-auth: hunter2' ....`  
 
 #### `/entries` - `GET`
 This endpoint returns an array with all the users, a user object looks like the following:
@@ -49,7 +49,7 @@ This endpoint returns an array with all the users, a user object looks like the 
 
 ###### Curl example:  
 ```
-curl -H 'x-auth: this is a very good password' localhost:8080/entries
+curl -H 'x-auth: hunter2' localhost:8080/entries
 ```
 
 #### `/user` - `POST`
@@ -61,7 +61,7 @@ This endpoint requires some query parameters:
 
 ###### Curl example:  
 ```sh
-curl -X POST -H 'x-auth: this is a very good password' \
+curl -X POST -H 'x-auth: hunter2' \
 'localhost:8080/user?username=Johnny+Appleseed&startTime=36000000&endTime=68400000'
 ```
 
@@ -71,7 +71,7 @@ This endpoint requires one query parameter: `username`, this is the username of 
 
 ###### Curl example:  
 ```sh
-curl -X DELETE -H 'x-auth: this is a very good password' \
+curl -X DELETE -H 'x-auth: hunter2' \
 'localhost:8080/user?username=Johnny+Appleseed'
 ```
 
@@ -81,7 +81,7 @@ The endpoint has one query parameter: `username`, the username of the user the p
 
 ###### Curl example:  
 ```sh
-curl -X PUT -H 'x-auth: this is a very good password' \
+curl -X PUT -H 'x-auth: hunter2' \
 'localhost:8080/pass?username=Johnny+Appleseed'
 ```
 
@@ -93,7 +93,7 @@ The endpoint has two query parameters:
 
 ###### Curl example:  
 ```sh
-curl -X DELETE -H 'x-auth: this is a very good password' \
+curl -X DELETE -H 'x-auth: hunter2' \
 'localhost:8080/pass?username=Johnny+Appleseed&pass=123123123'
 ```
 
@@ -103,7 +103,7 @@ It has one query parameter: `password`, the new password.
 
 ###### Curl example:  
 ```sh
-curl -X PUT -H 'x-auth: this is a very good password' \
+curl -X PUT -H 'x-auth: hunter2' \
 'localhost:8080/adminpassword?password=a+better+password'
 ```
 
