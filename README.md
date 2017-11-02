@@ -16,7 +16,7 @@ After the dependencies have been installed, you are almost ready to run the code
 ### Running
 After getting the arduino setup, you are ready to run the server. Go to the backend folder and run  
 `node src/index.js --port $PORT -d $PATH_TO_DATABASE -s $PATH_TO_ARDUINO_PORT -p $PATH_TO_PASSWORD_FILE`  
-Don't forget to replace all variables starting with `$` with actual values. Everything except for `$PATH_TO_ARDUINO_PORT` can be ommited to use defaults.
+Don't forget to replace all variables starting with `$` with actual values. Everything except for `$PATH_TO_ARDUINO_PORT` can be omitted to use defaults.
 
 ### Testing
 When the server is up and running, go ahead and place a tag on the scanner, you will hear three short beeps, these indicate that the pass was denied, this is because it has not yet been added to a user in the database.  
