@@ -74,6 +74,7 @@ module.exports = function makeServer(db, passwordPath, captureID) {
     const user = await db.findOne({
       username: req.query.username,
     })
+    console.log('Add user:', user)
 
     if (user.passIDs.includes(req.query.pass)) {
       const newUser = {
@@ -104,7 +105,7 @@ module.exports = function makeServer(db, passwordPath, captureID) {
 
           await db.update({ username: req.query.username }, newUser)
 
-          res.status(200).end('Added pass')
+          res.status(200).end(`Added pass:${pass}`)
         } else {
           // TODO: status code
           res.status(400).end('pass is already associated with a user')
