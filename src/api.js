@@ -33,7 +33,7 @@ module.exports = function makeServer(db, passwordPath, captureID) {
   app.use((req, res, next) => {
     const password = req.headers['x-auth']
 
-    if (password) {
+    if (password && password.length < 32) {
       // check if valid
       const saltedPassword = `${password}${app.locals.salt}`
       const hash = hasha(saltedPassword)
@@ -124,25 +124,34 @@ module.exports = function makeServer(db, passwordPath, captureID) {
   })
 
   app.post('/user', async (req, res) => {
-    const existingUser = await db.findOne({ username: req.query.username })
-    if (!existingUser) {
-      const user = {
-        username: req.query.username,
-        startTime: req.query.startTime,
-        endTime: req.query.endTime,
-        passIDs: [],
-      }
+    if (req.query.username.length <= 32) {
+      const existingUser = await db.findOne({ username: req.query.username })
+      if (!existingUser) {
+        const user = {
+          username: req.query.username,
+          startTime: req.query.startTime,
+          endTime: req.query.endTime,
+          passIDs: [],
+        }
 
-      await db.insert(user)
-      res.status(200).end('Added user')
+        await db.insert(user)
+        res.status(200).end('Added user')
+      } else {
+        res.status(400).end('Username already in use')
+      }
     } else {
-      res.status(400).end('Username already in use')
+      res.status(400).end('Username too long')
     }
   })
 
   app.delete('/user', async (req, res) => {
     await db.remove({ username: req.query.username })
     res.status(200).end('Deleted user')
+  })
+
+  app.get('/restart', (req, res) => {
+    res.status(200).end('K then')
+    process.exit(1)
   })
 
   return app
