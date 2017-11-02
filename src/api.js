@@ -29,21 +29,29 @@ module.exports = function makeServer(db, passwordPath, captureID) {
 
   // add a requets logger to the server
   app.use(morgan('dev'))
+
+  app.locals.bruteForceCounter = 0
   // this middleware will make sure all requests are authenticated
   app.use((req, res, next) => {
-    const password = req.headers['x-auth']
+    if (app.locals.bruteForceCounter < 5) {
+      const password = req.headers['x-auth']
 
-    if (password && password.length < 32) {
-      // check if valid
-      const saltedPassword = `${password}${app.locals.salt}`
-      const hash = hasha(saltedPassword)
-      if (hash === app.locals.hash) {
-        next()
+      if (password && password.length < 32) {
+        // check if valid
+        const saltedPassword = `${password}${app.locals.salt}`
+        const hash = hasha(saltedPassword)
+        if (hash === app.locals.hash) {
+          next()
+        } else {
+          app.locals.bruteForceCounter++
+          setTimeout(() => app.locals.bruteForceCounter--, 1000 * 60 * 5)
+          res.status(401).end('Bad credentials')
+        }
       } else {
         res.status(401).end('Bad credentials')
       }
     } else {
-      res.status(401).end('Bad credentials')
+      res.status(429).end('Too many tries')
     }
   })
 
