@@ -4,7 +4,7 @@ const hasha = require('hasha')
 const uuid = require('uuid')
 const morgan = require('morgan')
 
-module.exports = function makeServer(db, passwordPath, captureID) {
+module.exports = function makeServer(db, passwordPath, captureID, buildPath) {
   const app = express()
   fs
     .readFile(passwordPath, { encoding: 'utf-8' })
@@ -30,6 +30,12 @@ module.exports = function makeServer(db, passwordPath, captureID) {
   // add a requets logger to the server
   app.use(morgan('dev'))
 
+  app.use(express.static(buildPath))
+  app.get('/', (req, res) => {
+    res.redirect('/index.html')
+  })
+
+  // count request for bruteForce protekk
   app.locals.bruteForceCounter = 0
   // this middleware will make sure all requests are authenticated
   app.use((req, res, next) => {

@@ -1,7 +1,7 @@
 const Controller = require('./Controller')
 const argv = require('minimist')(process.argv.slice(2)) // slice off 'node' and 'src/index.js'
 
-let { port, s: scannerPath, d: dbPath, p: passwordPath } = argv
+let { port, s: scannerPath, d: dbPath, p: passwordPath, b: buildPath } = argv
 
 if (!port) {
   console.log('defaulting for port to 8080')
@@ -28,4 +28,5 @@ const app = new Controller({
   scannerPath,
   passwordPath,
   port,
+  buildPath,
 })

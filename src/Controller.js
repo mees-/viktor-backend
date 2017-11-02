@@ -40,7 +40,7 @@ module.exports = class Controller {
 
     this.connection.on('id', this.handleID.bind(this))
 
-    this.webserver = api(this.db, options.passwordPath, this.captureID.bind(this)).listen(options.port, () => {
+    this.webserver = api(this.db, options.passwordPath, this.captureID.bind(this), options.buildPath).listen(options.port, () => {
       console.log(`started listening on port: ${options.port}`)
     })
   }
