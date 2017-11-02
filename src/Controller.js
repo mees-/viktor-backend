@@ -53,15 +53,15 @@ module.exports = class Controller {
     // check times
     const time = timeInDay()
 
-    if (time > person.startTime) {
-      return true
+    if (time < person.startTime) {
+      return false
     }
 
-    if (time < person.endTime) {
-      return true
+    if (time > person.endTime) {
+      return false
     }
 
-    return false
+    return true
   }
 
   async handleID(id) {
