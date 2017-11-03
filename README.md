@@ -13,15 +13,12 @@ In this folder, run `npm install` this will download all of the dependencies for
 ### Arduino
 After the dependencies have been installed, you are almost ready to run the code, make sure you connect the arduino and upload the right script to it using the arduino IDE. The script can be found in arduino.zip. Also find out what port the arduino is connected to. On my (macOS) computer, this was the path `/dev/tty.usbmodem14621`.
 
-### Running
-After getting the arduino setup, you are ready to run the server. Go to the backend folder and run  
-`node src/index.js --port $PORT -d $PATH_TO_DATABASE -s $PATH_TO_ARDUINO_PORT -p $PATH_TO_PASSWORD_FILE`  
-Don't forget to replace all variables starting with `$` with actual values. Everything except for `$PATH_TO_ARDUINO_PORT` can be omitted to use defaults.
-
-### Testing
-When the server is up and running, go ahead and place a tag on the scanner, you will hear three short beeps, these indicate that the pass was denied, this is because it has not yet been added to a user in the database.  
-
-All actions are done through the API, some minimal documentation below:
+### Usage
+When the Arduino is setup, and the npm dependencies have been installed, you are ready to run the server.  
+To start it, run:  
+`npm start -- --port $PORT -s $SCANNER_PATH -b $PATH_TO_BUILD_FOLDER -d $PATH_TO_DATABASE -p $PATH_TO_PASSWORD_FILE`  
+replace the $ variables with actual values, the `$PATH_TO_BUILD_FOLDER` is the path to the build folder from the frontend. If you have not yet setup the frontend, first go there and read the readme for that project to get a build folder.  
+When this command completes, the server will have started running. To stop the server, `cd` into the backend folder and run `./node_modules/.bin/forever stop src/index.js`, this will stop the server daemon.
 
 ## API documentation
 
@@ -48,7 +45,7 @@ This endpoint returns an array with all the users, a user object looks like the 
 ```
 
 ###### Curl example:  
-```
+```sh
 curl -H 'x-auth: hunter2' localhost:8080/entries
 ```
 
